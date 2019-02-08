@@ -130,7 +130,7 @@ ax.set_ylabel('y (meters)')
 ax.set_zlabel('z (meters)')
 #ax.set(xlim=(0, 10), ylim=(-2, 2),
 plt.title("Multi Back and Forth Method")
-plt.legend(loc='best');
+plt.legend(loc='best')
 plt.plot([0,0,width,width,0],[0,length,length,0,0])
 
 plt.show()
