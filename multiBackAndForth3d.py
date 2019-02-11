@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
 
-
+#Uav is used to store a path
 class Vant():
     def __init__(self,x,y,z):
         self.x = x
@@ -18,12 +18,14 @@ class Vant():
         self.zs = [z]
         self.path = [[x,y,z]]
 
+    #add one point in the path
     def addStraight(self,p):
         self.path.append(p)
         self.xs.append(p[0])
         self.ys.append(p[1])
         self.zs.append(p[2])
 
+    #add semicircle in the end of the straight - permit the uav return
     def addSemicircle(self,center,radiu,direction,height): #false->back
         if(direction): #true->forth
             angles = range(1,179,10)
@@ -49,17 +51,18 @@ class Vant():
 def explore(width,length,qtdUavs,reach,overleap,height):
     uavs = []
     captureWidth = reach - overleap #capture area per uav without overleap
-
-    #initial points for each uav
+    #set the initial position for each uav
     for i in range(qtdUavs):
-        uavs.append(Vant(captureWidth,0,height))
-        captureWidth = captureWidth + 2 * (reach - overleap)
+        uavs.append(Vant(captureWidth/2,0,height)) #the initial position is composed with the (x->width without overleap,y->0,z->height)
+        #captureWidth = captureWidth + 2 * (reach - overleap)
+        captureWidth = captureWidth + reach - overleap
+
 
     #the area will be covereged
     total_area = length * width
-    #print (total_area)
     covereged_area = 0
 
+    radiu = ((reach - overleap) * qtdUavs)/2
     forth = True
 
     while(covereged_area < total_area):
@@ -69,7 +72,6 @@ def explore(width,length,qtdUavs,reach,overleap,height):
                 covereged_area = (uavs[i].path[-1][0] + reach - overleap) * uavs[i].path[-1][1]
                 #print (covereged_area,i)
                 if(covereged_area < total_area):
-                    radiu = (reach - overleap) * qtdUavs
                     center = [uavs[i].path[-1][0] + radiu,length]
                     uavs[i].addSemicircle(center,radiu,True,height)
                     uavs[i].addStraight([round(uavs[i].path[-1][0]),length,height])
@@ -81,28 +83,24 @@ def explore(width,length,qtdUavs,reach,overleap,height):
                 covereged_area = (uavs[i].path[-1][0] + reach - overleap) * length
                 #print (covereged_area,i)
                 if ((covereged_area < total_area)):
-                    radiu = (reach - overleap) * qtdUavs
                     center = [uavs[i].path[-1][0] + radiu,0]
                     uavs[i].addSemicircle(center,radiu,False,height)
                     uavs[i].addStraight([round(uavs[i].path[-1][0]),0,height])
-
-
+            
             forth = True
-
     return uavs
 
 #parameters
-qtdUavs = 4
+qtdUavs = 3
 width = 7000
 length = 7000
-#reach = 12
 height = 90
-fov = 1.6406094968746698
-reach = 2 * height * math.tan(fov/2)
+fov = 1.64 #06094968746698
+reach = 2 * height * math.tan(fov/2) #these inputs and values were verified
 overleap = 0.4 * reach
 velocity = 15
 
-paths = explore(width,length,qtdUavs,reach,overleap,height) #largura, comprimento, qtd_uavs, alcance, sobreposição
+paths = explore(width,length,qtdUavs,reach,overleap,height) #largura, comprimento, qtd_uavs, alcance, sobreposição, altura
 
 
 ########################################## Plots ###############################################
