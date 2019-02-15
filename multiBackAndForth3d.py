@@ -74,7 +74,7 @@ def explore(width,length,qtdUavs,reach,overleap,height):
                 if(covereged_area < total_area):
                     center = [uavs[i].path[-1][0] + radiu,length]
                     uavs[i].addSemicircle(center,radiu,True,height)
-                    uavs[i].addStraight([round(uavs[i].path[-1][0]),length,height])
+                    uavs[i].addStraight([uavs[i].path[-1][0],length,height])
 
             forth = False
         else:
@@ -85,15 +85,15 @@ def explore(width,length,qtdUavs,reach,overleap,height):
                 if ((covereged_area < total_area)):
                     center = [uavs[i].path[-1][0] + radiu,0]
                     uavs[i].addSemicircle(center,radiu,False,height)
-                    uavs[i].addStraight([round(uavs[i].path[-1][0]),0,height])
+                    uavs[i].addStraight([uavs[i].path[-1][0],0,height])
             
             forth = True
     return uavs
 
 #parameters
-qtdUavs = 3
-width = 7000
-length = 7000
+qtdUavs = 4
+width = 600
+length = 600
 height = 90
 fov = 1.64 #06094968746698
 reach = 2 * height * math.tan(fov/2) #these inputs and values were verified
@@ -114,8 +114,13 @@ for k in range(qtdUavs):
 	xline = paths[k].xs
 	yline = paths[k].ys
 	zline = paths[k].zs
+	ts = [0]
+	tt = 0
 	for i in range(1,len(xline)):
 		dst = distance.euclidean([xline[i-1],yline[i-1],zline[i-1]],[xline[i],yline[i],zline[i]])
+		t = dst / velocity
+		tt = tt + t
+		ts.append(tt)
 		dstotal = dstotal + dst
 	time = dstotal / velocity
 	print(k+1,dstotal,time)
@@ -123,6 +128,7 @@ for k in range(qtdUavs):
 	dst = 0
 	ax.plot3D(xline, yline, zline, label = 'Uav' + str(k+1))
 
+#print(ts)
 ax.set_xlabel('x (meters)')
 ax.set_ylabel('y (meters)')
 ax.set_zlabel('z (meters)')
@@ -130,5 +136,4 @@ ax.set_zlabel('z (meters)')
 plt.title("Multi Back and Forth Method")
 plt.legend(loc='best')
 plt.plot([0,0,width,width,0],[0,length,length,0,0])
-
 plt.show()
